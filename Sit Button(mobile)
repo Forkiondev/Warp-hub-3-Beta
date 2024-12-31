@@ -1,0 +1,113 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+local sitButton = Instance.new("TextButton")
+sitButton.Name = "SitButton"
+sitButton.Size = UDim2.new(0, 120, 0, 50)
+sitButton.Position = UDim2.new(0.95, -130, 0.1, 0)
+sitButton.AnchorPoint = Vector2.new(1, 0)
+sitButton.BackgroundColor3 = Color3.fromRGB(52, 152, 219)
+sitButton.BackgroundTransparency = 0
+sitButton.Text = "Sit"
+sitButton.TextColor3 = Color3.new(1, 1, 1)
+sitButton.TextScaled = true
+sitButton.Font = Enum.Font.GothamBold
+sitButton.BorderSizePixel = 0
+sitButton.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = sitButton
+
+local shadow = Instance.new("UIStroke")
+shadow.Color = Color3.fromRGB(0, 0, 0)
+shadow.Thickness = 2
+shadow.Transparency = 0.5
+shadow.Parent = sitButton
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(52, 152, 219)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(41, 128, 185))
+})
+gradient.Rotation = 90  
+gradient.Parent = sitButton
+
+local function animateGradient()
+    while true do
+        local tween = TweenService:Create(gradient, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+            Rotation = 270
+        })
+        tween:Play()
+        tween.Completed:Wait()
+        gradient.Rotation = 90  
+    end
+end
+
+coroutine.wrap(animateGradient)()
+
+local glow = Instance.new("Frame")
+glow.Name = "Glow"
+glow.Size = UDim2.new(1, 10, 1, 10)
+glow.Position = UDim2.new(0, -5, 0, -5)
+glow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+glow.BackgroundTransparency = 1
+glow.BorderSizePixel = 0
+glow.Parent = sitButton
+
+local glowCorner = Instance.new("UICorner")
+glowCorner.CornerRadius = UDim.new(0, 12)
+glowCorner.Parent = glow
+
+local glowGradient = Instance.new("UIGradient")
+glowGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
+})
+glowGradient.Rotation = 90
+glowGradient.Parent = glow
+
+sitButton.MouseEnter:Connect(function()
+    local tween = TweenService:Create(glow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+        BackgroundTransparency = 0.7
+    })
+    tween:Play()
+end)
+
+sitButton.MouseLeave:Connect(function()
+    local tween = TweenService:Create(glow, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+        BackgroundTransparency = 1
+    })
+    tween:Play()
+end)
+
+sitButton.MouseButton1Down:Connect(function()
+    local tween = TweenService:Create(sitButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
+        Size = UDim2.new(0, 115, 0, 45)
+    })
+    tween:Play()
+end)
+
+sitButton.MouseButton1Up:Connect(function()
+    local tween = TweenService:Create(sitButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad), {
+        Size = UDim2.new(0, 120, 0, 50)
+    })
+    tween:Play()
+end)
+
+local function sit()
+    local character = player.Character
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    humanoid.Sit = true
+end
+
+sitButton.MouseButton1Click:Connect(sit)
